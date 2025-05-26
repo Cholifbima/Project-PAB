@@ -212,10 +212,8 @@ This project is created for educational purposes (PAB Project).
 
 ## 👥 Contributors
 
-- [Your Name] - Developer
+Cholif Bima Ardiansyah
+Fathan Dhiya Mahfuzh
+Havizhan Rhaiya Ardhana
 
-## 📞 Support
 
-Jika ada pertanyaan atau issues, silakan contact melalui:
-- Email: [your-email]
-- GitHub Issues: [repository-issues-url] 
