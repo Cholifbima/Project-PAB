@@ -1,5 +1,6 @@
 package com.example.pabproject.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,29 +19,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.pabproject.ui.components.BottomNavigationBar
-
-data class HistoryItem(
-    val id: Int,
-    val type: String,
-    val content: String,
-    val timestamp: String
-)
+import com.example.pabproject.LocalHistoryManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryScreen(navController: NavController) {
+    val historyManager = LocalHistoryManager.current
     val currentRoute = navController.currentDestination?.route
-    
-    // Sample history data
-    val historyItems = remember {
-        listOf(
-            HistoryItem(1, "Text QR", "Hello World!", "2024-01-15 10:30"),
-            HistoryItem(2, "URL QR", "https://www.google.com", "2024-01-15 09:15"),
-            HistoryItem(3, "Email QR", "test@example.com", "2024-01-14 16:45"),
-            HistoryItem(4, "Scanned", "https://www.figma.com", "2024-01-14 14:20"),
-            HistoryItem(5, "Text QR", "Sample QR Code", "2024-01-14 11:10")
-        )
-    }
+    val historyItems = historyManager.historyItems
     
     Scaffold(
         topBar = {
@@ -102,7 +88,12 @@ fun HistoryScreen(navController: NavController) {
                 contentPadding = PaddingValues(vertical = 16.dp)
             ) {
                 items(historyItems) { item ->
-                    HistoryItemCard(item = item)
+                    HistoryItemCard(
+                        item = item,
+                        onClick = {
+                            navController.navigate("qr_detail/${item.id}")
+                        }
+                    )
                 }
             }
         }
@@ -110,9 +101,14 @@ fun HistoryScreen(navController: NavController) {
 }
 
 @Composable
-fun HistoryItemCard(item: HistoryItem) {
+fun HistoryItemCard(
+    item: com.example.pabproject.utils.HistoryItem,
+    onClick: () -> Unit
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {

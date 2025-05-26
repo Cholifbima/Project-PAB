@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import com.example.pabproject.LocalHistoryManager
 import com.example.pabproject.ui.components.BottomNavigationBar
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -40,6 +41,7 @@ import java.util.concurrent.Executors
 @Composable
 fun QRScannerScreen(navController: NavController) {
     val lifecycleOwner = LocalLifecycleOwner.current
+    val historyManager = LocalHistoryManager.current
     val currentRoute = navController.currentDestination?.route
     
     var scannedResult by remember { mutableStateOf("") }
@@ -102,16 +104,18 @@ fun QRScannerScreen(navController: NavController) {
                         .fillMaxWidth()
                         .weight(1f)
                 ) {
-                    AndroidView(
-                        factory = { ctx ->
-                            PreviewView(ctx).apply {
-                                setupCamera(ctx, this, lifecycleOwner, cameraExecutor, camera) { result ->
-                                    scannedResult = result
+                                            AndroidView(
+                            factory = { ctx ->
+                                PreviewView(ctx).apply {
+                                    setupCamera(ctx, this, lifecycleOwner, cameraExecutor, camera) { result ->
+                                        scannedResult = result
+                                        // Auto-save scanned result to history
+                                        historyManager.addHistoryItem("Scanned", result)
+                                    }
                                 }
-                            }
-                        },
-                        modifier = Modifier.fillMaxSize()
-                    )
+                            },
+                            modifier = Modifier.fillMaxSize()
+                        )
                     
                     // Scanning overlay
                     Box(

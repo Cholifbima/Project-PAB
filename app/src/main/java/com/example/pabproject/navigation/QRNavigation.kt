@@ -13,6 +13,7 @@ import com.example.pabproject.ui.screens.URLToQRScreen
 import com.example.pabproject.ui.screens.EmailToQRScreen
 import com.example.pabproject.ui.screens.QRScannerScreen
 import com.example.pabproject.ui.screens.HistoryScreen
+import com.example.pabproject.ui.screens.QRDetailScreen
 
 sealed class Screen(val route: String) {
     data object Dashboard : Screen("dashboard")
@@ -23,6 +24,7 @@ sealed class Screen(val route: String) {
     data object EmailToQR : Screen("email_to_qr")
     data object QRScanner : Screen("qr_scanner")
     data object History : Screen("history")
+    data object QRDetail : Screen("qr_detail")
 }
 
 @Composable
@@ -56,6 +58,13 @@ fun QRNavigation(
         }
         composable(Screen.History.route) {
             HistoryScreen(navController = navController)
+        }
+        composable("${Screen.QRDetail.route}/{historyItemId}") { backStackEntry ->
+            val historyItemId = backStackEntry.arguments?.getString("historyItemId") ?: ""
+            QRDetailScreen(
+                navController = navController,
+                historyItemId = historyItemId
+            )
         }
     }
 } 
