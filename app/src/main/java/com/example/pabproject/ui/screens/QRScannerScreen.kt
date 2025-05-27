@@ -6,17 +6,20 @@ import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FlashOff
 import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.LifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
@@ -26,7 +29,11 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.example.pabproject.LocalHistoryManager
-import com.example.pabproject.ui.components.BottomNavigationBar
+import com.example.pabproject.ui.components.*
+import com.example.pabproject.ui.theme.AbrilFatface
+import com.example.pabproject.ui.theme.FiraCode
+import com.example.pabproject.ui.theme.Nunito
+import com.example.pabproject.ui.theme.PlayfairDisplay
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -60,13 +67,19 @@ fun QRScannerScreen(navController: NavController) {
                 title = { 
                     Text(
                         "QR Scanner",
+                        fontFamily = PlayfairDisplay,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.primary
                     ) 
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack, 
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
                 },
                 actions = {
@@ -82,15 +95,20 @@ fun QRScannerScreen(navController: NavController) {
                     ) {
                         Icon(
                             imageVector = if (isFlashOn) Icons.Default.FlashOn else Icons.Default.FlashOff,
-                            contentDescription = "Flash"
+                            contentDescription = "Flash",
+                            tint = if (isFlashOn) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
+                )
             )
         },
         bottomBar = {
             BottomNavigationBar(navController, currentRoute)
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -104,18 +122,18 @@ fun QRScannerScreen(navController: NavController) {
                         .fillMaxWidth()
                         .weight(1f)
                 ) {
-                                            AndroidView(
-                            factory = { ctx ->
-                                PreviewView(ctx).apply {
-                                    setupCamera(ctx, this, lifecycleOwner, cameraExecutor, camera) { result ->
-                                        scannedResult = result
-                                        // Auto-save scanned result to history
-                                        historyManager.addHistoryItem("Scanned", result)
-                                    }
+                    AndroidView(
+                        factory = { ctx ->
+                            PreviewView(ctx).apply {
+                                setupCamera(ctx, this, lifecycleOwner, cameraExecutor, camera) { result ->
+                                    scannedResult = result
+                                    // Auto-save scanned result to history
+                                    historyManager.addHistoryItem("Scanned", result)
                                 }
-                            },
-                            modifier = Modifier.fillMaxSize()
-                        )
+                            }
+                        },
+                        modifier = Modifier.fillMaxSize()
+                    )
                     
                     // Scanning overlay
                     Box(
@@ -124,8 +142,8 @@ fun QRScannerScreen(navController: NavController) {
                     ) {
                         Card(
                             modifier = Modifier.size(250.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-                            border = BorderStroke(2.dp, Color.White)
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.1f)),
+                            border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
                         ) {}
                     }
                 }
@@ -135,22 +153,36 @@ fun QRScannerScreen(navController: NavController) {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
-                        shape = RoundedCornerShape(12.dp)
+                            .padding(16.dp)
+                            .shadow(4.dp, RoundedCornerShape(16.dp)),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer
+                        ),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 2.dp
+                        )
                     ) {
                         Column(
-                            modifier = Modifier.padding(16.dp)
+                            modifier = Modifier.padding(20.dp)
                         ) {
                             Text(
                                 text = "Scanned Result:",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
+                                fontFamily = PlayfairDisplay,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 18.sp,
+                                letterSpacing = 0.15.sp,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
                             Text(
                                 text = scannedResult,
+                                fontFamily = FiraCode,
+                                fontWeight = FontWeight.Normal,
                                 fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                                letterSpacing = 0.sp,
+                                lineHeight = 20.sp,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
                             )
                         }
                     }
@@ -164,20 +196,51 @@ fun QRScannerScreen(navController: NavController) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text(
-                        text = "Camera permission is required to scan QR codes",
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(
-                        onClick = { cameraPermissionState.launchPermissionRequest() },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF8B5CF6)
-                        )
+                    Box(
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(RoundedCornerShape(50.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text("Grant Permission", color = Color.White)
+                        Icon(
+                            imageVector = Icons.Default.QrCodeScanner,
+                            contentDescription = "Camera Permission",
+                            modifier = Modifier.size(60.dp),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
                     }
+                    
+                    Spacer(modifier = Modifier.height(24.dp))
+                    
+                    Text(
+                        text = "Camera Permission Required",
+                        fontFamily = AbrilFatface,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 24.sp,
+                        letterSpacing = 0.25.sp,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    Text(
+                        text = "We need camera access to scan QR codes",
+                        fontFamily = Nunito,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 16.sp,
+                        letterSpacing = 0.25.sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    
+                    Spacer(modifier = Modifier.height(24.dp))
+                    
+                    QRActionButton(
+                        text = "Grant Permission",
+                        icon = Icons.Default.QrCodeScanner,
+                        onClick = { cameraPermissionState.launchPermissionRequest() },
+                        isPrimary = true
+                    )
                 }
             }
         }
