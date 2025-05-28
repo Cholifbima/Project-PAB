@@ -6,13 +6,20 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.qrcode.QRCodeWriter
 import java.util.Hashtable
+import androidx.compose.ui.graphics.toArgb
+import com.example.pabproject.ui.theme.Brown
+import com.example.pabproject.ui.theme.PaleYellow
+import com.example.pabproject.ui.theme.Black
+import com.example.pabproject.ui.theme.White
 
 object QRCodeGenerator {
     
     fun generateQRCode(
         text: String,
         width: Int = 512,
-        height: Int = 512
+        height: Int = 512,
+        darkColor: androidx.compose.ui.graphics.Color = Brown,
+        lightColor: androidx.compose.ui.graphics.Color = PaleYellow
     ): Bitmap? {
         return try {
             val writer = QRCodeWriter()
@@ -21,11 +28,11 @@ object QRCodeGenerator {
             hints[EncodeHintType.MARGIN] = 1
             
             val bitMatrix = writer.encode(text, BarcodeFormat.QR_CODE, width, height, hints)
-            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
             
             for (x in 0 until width) {
                 for (y in 0 until height) {
-                    bitmap.setPixel(x, y, if (bitMatrix[x, y]) Color.BLACK else Color.WHITE)
+                    bitmap.setPixel(x, y, if (bitMatrix[x, y]) darkColor.toArgb() else lightColor.toArgb())
                 }
             }
             bitmap

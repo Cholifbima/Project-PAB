@@ -6,6 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.example.pabproject.navigation.QRNavigation
 import com.example.pabproject.ui.theme.PABProjectTheme
@@ -32,7 +34,10 @@ class MainActivity : ComponentActivity() {
                 LocalThemeManager provides themeManager,
                 LocalHistoryManager provides historyManager
             ) {
-                PABProjectTheme(darkTheme = themeManager.isDarkMode) {
+                // Use a safe way to read the isDarkMode value
+                val isDarkMode = themeManager.isDarkMode
+                
+                PABProjectTheme(darkTheme = isDarkMode) {
                     QRNavigation()
                 }
             }
