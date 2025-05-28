@@ -11,5 +11,5 @@ val LightPink = Color(0xFFFFDCDC)
 val PaleOrange = Color(0xFFFFF2EB)
 val PaleYellow = Color(0xFFFFE8CD)
 val LightPeach = Color(0xFFFFD6BA)
-val Black = Color.Black
-val White = Color.White
+val Black = Color(0xFF000000)
+val White = Color(0xFFFFFFFF) 
