@@ -11,6 +11,7 @@ import com.example.pabproject.ui.theme.Brown
 import com.example.pabproject.ui.theme.PaleYellow
 import com.example.pabproject.ui.theme.Black
 import com.example.pabproject.ui.theme.White
+import java.net.URLEncoder
 
 object QRCodeGenerator {
     
@@ -61,6 +62,44 @@ object QRCodeGenerator {
             url
         } else {
             "https://$url"
+        }
+    }
+    
+    fun generateSmsQRCode(phoneNumber: String, message: String? = null): String {
+        // Clean the phone number by removing spaces, dashes, etc.
+        val cleanNumber = phoneNumber.replace(Regex("[^+0-9]"), "")
+        
+        return if (message.isNullOrBlank()) {
+            // If no message, use simple SMS URI
+            "smsto:$cleanNumber"
+        } else {
+            // Use SMSTO format which doesn't require encoding and preserves spaces
+            "smsto:$cleanNumber:$message"
+        }
+    }
+    
+    fun generateTwitterQRCode(username: String, isProfile: Boolean = true): String {
+        return if (isProfile) {
+            val formattedUsername = username.trimStart('@')
+            "https://twitter.com/$formattedUsername"
+        } else {
+            val tweetContent = URLEncoder.encode(username, "UTF-8")
+            "https://twitter.com/intent/tweet?text=$tweetContent"
+        }
+    }
+    
+    fun generateWifiQRCode(ssid: String, password: String, encryptionType: String, isHidden: Boolean = false): String {
+        return buildString {
+            append("WIFI:")
+            append("S:$ssid;")
+            if (password.isNotBlank() && encryptionType != "none") {
+                append("P:$password;")
+            }
+            append("T:$encryptionType;")
+            if (isHidden) {
+                append("H:true;")
+            }
+            append(";")
         }
     }
 } 

@@ -82,7 +82,7 @@ fun MenuScreen(navController: NavController) {
                 .padding(16.dp)
                 .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
                 text = "Choose QR Code Type",
@@ -126,17 +126,49 @@ fun MenuScreen(navController: NavController) {
             )
             
             QRActionButton(
+                text = "SMS QR Code",
+                icon = Icons.Default.Sms,
+                onClick = {
+                    navController.navigate(Screen.SmsToQR.route)
+                },
+                modifier = Modifier.fillMaxWidth(),
+                isPrimary = false
+            )
+            
+            QRActionButton(
+                text = "Twitter QR Code",
+                icon = Icons.Default.Tag,
+                onClick = {
+                    navController.navigate(Screen.TwitterToQR.route)
+                },
+                modifier = Modifier.fillMaxWidth(),
+                isPrimary = true
+            )
+            
+            QRActionButton(
+                text = "WiFi QR Code",
+                icon = Icons.Default.Wifi,
+                onClick = {
+                    navController.navigate(Screen.WifiToQR.route)
+                },
+                modifier = Modifier.fillMaxWidth(),
+                isPrimary = false
+            )
+            
+            QRActionButton(
                 text = "Scan QR Code",
                 icon = Icons.Default.QrCodeScanner,
                 onClick = {
                     navController.navigate(Screen.QRScanner.route)
                 },
                 modifier = Modifier.fillMaxWidth(),
-                isPrimary = false
+                isPrimary = true
             )
             
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer
                 )

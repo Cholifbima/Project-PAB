@@ -14,6 +14,9 @@ import com.example.pabproject.ui.screens.EmailToQRScreen
 import com.example.pabproject.ui.screens.QRScannerScreen
 import com.example.pabproject.ui.screens.HistoryScreen
 import com.example.pabproject.ui.screens.QRDetailScreen
+import com.example.pabproject.ui.screens.SmsToQRScreen
+import com.example.pabproject.ui.screens.TwitterToQRScreen
+import com.example.pabproject.ui.screens.WifiToQRScreen
 
 sealed class Screen(val route: String) {
     data object Dashboard : Screen("dashboard")
@@ -22,6 +25,9 @@ sealed class Screen(val route: String) {
     data object TextToQR : Screen("text_to_qr")
     data object URLToQR : Screen("url_to_qr")
     data object EmailToQR : Screen("email_to_qr")
+    data object SmsToQR : Screen("sms_to_qr")
+    data object TwitterToQR : Screen("twitter_to_qr")
+    data object WifiToQR : Screen("wifi_to_qr")
     data object QRScanner : Screen("qr_scanner")
     data object History : Screen("history")
     data object QRDetail : Screen("qr_detail")
@@ -52,6 +58,15 @@ fun QRNavigation(
         }
         composable(Screen.EmailToQR.route) {
             EmailToQRScreen(navController = navController)
+        }
+        composable(Screen.SmsToQR.route) {
+            SmsToQRScreen(navController = navController)
+        }
+        composable(Screen.TwitterToQR.route) {
+            TwitterToQRScreen(navController = navController)
+        }
+        composable(Screen.WifiToQR.route) {
+            WifiToQRScreen(navController = navController)
         }
         composable(Screen.QRScanner.route) {
             QRScannerScreen(navController = navController)

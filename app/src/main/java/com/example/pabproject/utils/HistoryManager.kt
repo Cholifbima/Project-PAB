@@ -5,7 +5,10 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.Sms
+import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material.icons.filled.TextFields
+import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -31,11 +34,14 @@ class HistoryManager : ViewModel() {
     val historyItems: List<HistoryItem> = _historyItems
     
     fun addHistoryItem(type: String, content: String) {
-        val (icon, color) = when (type) {
-            "Email QR" -> Icons.Default.Email to Gold
-            "URL QR" -> Icons.Default.Link to LightBrown
-            "Text QR" -> Icons.Default.TextFields to SandyBeige
-            "Scanned" -> Icons.Default.QrCodeScanner to Brown
+        val (icon, color) = when {
+            type.contains("Email", ignoreCase = true) -> Icons.Default.Email to Gold
+            type.contains("URL", ignoreCase = true) -> Icons.Default.Link to LightBrown
+            type.contains("Text", ignoreCase = true) -> Icons.Default.TextFields to SandyBeige
+            type.contains("Scanned", ignoreCase = true) -> Icons.Default.QrCodeScanner to Brown
+            type.contains("SMS", ignoreCase = true) -> Icons.Default.Sms to SandyBeige
+            type.contains("Twitter", ignoreCase = true) -> Icons.Default.Tag to LightBrown
+            type.contains("WiFi", ignoreCase = true) -> Icons.Default.Wifi to Gold
             else -> Icons.Default.QrCode to Brown
         }
         
@@ -53,12 +59,23 @@ class HistoryManager : ViewModel() {
         }
     }
     
+    fun removeHistoryItem(id: String) {
+        val indexToRemove = _historyItems.indexOfFirst { it.id == id }
+        if (indexToRemove >= 0) {
+            _historyItems.removeAt(indexToRemove)
+        }
+    }
+    
     fun getHistoryItem(id: String): HistoryItem? {
         return _historyItems.find { it.id == id }
     }
     
-    fun clearHistory() {
-        _historyItems.clear()
+    fun clearHistory(): Boolean {
+        if (_historyItems.isNotEmpty()) {
+            _historyItems.clear()
+            return true
+        }
+        return false
     }
     
     init {
@@ -66,6 +83,9 @@ class HistoryManager : ViewModel() {
         addHistoryItem("Text QR", "Hello World!")
         addHistoryItem("URL QR", "https://www.google.com")
         addHistoryItem("Email QR", "test@example.com")
+        addHistoryItem("SMS QR", "0123456789:Hello from SMS")
+        addHistoryItem("Twitter Profile QR", "https://twitter.com/username")
+        addHistoryItem("WiFi QR", "WIFI:S:MyNetwork;T:WPA;P:mypassword;;")
         addHistoryItem("Scanned", "https://www.figma.com")
     }
 } 
