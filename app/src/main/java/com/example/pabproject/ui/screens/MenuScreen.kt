@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.pabproject.LocalThemeManager
 import com.example.pabproject.navigation.Screen
 import com.example.pabproject.ui.components.BottomNavigationBar
 import com.example.pabproject.ui.components.QRActionButton
@@ -32,6 +33,7 @@ import com.example.pabproject.ui.theme.PlayfairDisplay
 fun MenuScreen(navController: NavController) {
     val currentRoute = navController.currentDestination?.route
     val scrollState = rememberScrollState()
+    val themeManager = LocalThemeManager.current
     
     Scaffold(
         topBar = {
@@ -50,6 +52,15 @@ fun MenuScreen(navController: NavController) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack, 
                             contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { themeManager.toggleDarkMode() }) {
+                        Icon(
+                            imageVector = if (themeManager.isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
+                            contentDescription = if (themeManager.isDarkMode) "Switch to Light Mode" else "Switch to Dark Mode",
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }

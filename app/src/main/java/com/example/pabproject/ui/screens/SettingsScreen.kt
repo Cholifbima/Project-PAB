@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,6 +32,9 @@ fun SettingsScreen(navController: NavController) {
     val themeManager = LocalThemeManager.current
     val currentRoute = navController.currentDestination?.route
     val scrollState = rememberScrollState()
+    
+    // Directly observe the theme state
+    val isDarkMode = remember { derivedStateOf { themeManager.isDarkMode } }.value
     
     Scaffold(
         topBar = {
@@ -108,8 +112,8 @@ fun SettingsScreen(navController: NavController) {
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Default.DarkMode,
-                            contentDescription = "Dark Mode",
+                            imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
+                            contentDescription = if (isDarkMode) "Light Mode" else "Dark Mode",
                             modifier = Modifier.size(24.dp),
                             tint = MaterialTheme.colorScheme.onSecondaryContainer
                         )
@@ -119,7 +123,7 @@ fun SettingsScreen(navController: NavController) {
                     
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Dark Mode",
+                            text = if (isDarkMode) "Light Mode" else "Dark Mode",
                             fontFamily = PlayfairDisplay,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 18.sp,
@@ -128,7 +132,7 @@ fun SettingsScreen(navController: NavController) {
                         )
                         
                         Text(
-                            text = "Toggle between light and dark theme",
+                            text = if (isDarkMode) "Switch to light theme" else "Switch to dark theme",
                             fontFamily = Nunito,
                             fontWeight = FontWeight.Normal,
                             fontSize = 14.sp,
@@ -138,8 +142,11 @@ fun SettingsScreen(navController: NavController) {
                     }
                     
                     Switch(
-                        checked = themeManager.isDarkMode,
-                        onCheckedChange = { themeManager.setDarkMode(it) },
+                        checked = isDarkMode,
+                        onCheckedChange = { 
+                            // Simple direct toggle without coroutines to avoid potential issues
+                            themeManager.setDarkMode(!isDarkMode)
+                        },
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = MaterialTheme.colorScheme.primary,
                             checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
