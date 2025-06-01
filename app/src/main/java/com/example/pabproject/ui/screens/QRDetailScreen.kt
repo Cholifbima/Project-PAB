@@ -1,5 +1,6 @@
 package com.example.pabproject.ui.screens
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -20,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.core.content.FileProvider
 import com.example.pabproject.LocalHistoryManager
 import com.example.pabproject.ui.components.*
 import com.example.pabproject.ui.theme.FiraCode
@@ -27,6 +29,8 @@ import com.example.pabproject.ui.theme.Nunito
 import com.example.pabproject.ui.theme.PlayfairDisplay
 import com.example.pabproject.utils.GalleryUtils
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,6 +47,44 @@ fun QRDetailScreen(
     var generatedBitmap by remember { mutableStateOf<Bitmap?>(null) }
     val historyItem = remember(historyItemId) {
         historyManager.getHistoryItem(historyItemId)
+    }
+    
+    // Function to share QR code
+    fun shareQRCode(bitmap: Bitmap) {
+        try {
+            // Create a file in the cache directory
+            val cachePath = File(context.cacheDir, "images")
+            cachePath.mkdirs()
+            val file = File(cachePath, "shared_qr.png")
+            
+            // Write the bitmap to the file
+            FileOutputStream(file).use { stream ->
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            }
+            
+            // Get the content URI using FileProvider
+            val contentUri = FileProvider.getUriForFile(
+                context,
+                "com.example.pabproject.fileprovider",
+                file
+            )
+            
+            // Create the share intent
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "image/png"
+                putExtra(Intent.EXTRA_STREAM, contentUri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            
+            // Start the share activity
+            context.startActivity(Intent.createChooser(shareIntent, "Share QR Code"))
+        } catch (e: Exception) {
+            Toast.makeText(
+                context,
+                "Failed to share QR Code: ${e.message}",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
     
     if (historyItem == null) {
@@ -196,7 +238,15 @@ fun QRDetailScreen(
                 // Share Button
                 Button(
                     onClick = {
-                        Toast.makeText(context, "Share feature coming soon!", Toast.LENGTH_SHORT).show()
+                        generatedBitmap?.let { bitmap ->
+                            shareQRCode(bitmap)
+                        } ?: run {
+                            Toast.makeText(
+                                context,
+                                "QR Code not yet generated",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     },
                     modifier = Modifier
                         .weight(1f)
