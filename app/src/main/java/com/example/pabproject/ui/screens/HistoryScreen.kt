@@ -205,9 +205,6 @@ fun HistoryScreen(navController: NavController) {
                                     imageVector = type.icon, 
                                     contentDescription = type.displayName
                                 )
-                                if (type == QRCodeType.ALL) {
-                                    Text(type.displayName)
-                                }
                             }
                         }
                     }
