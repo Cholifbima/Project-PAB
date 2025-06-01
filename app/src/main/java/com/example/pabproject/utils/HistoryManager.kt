@@ -77,15 +77,4 @@ class HistoryManager : ViewModel() {
         }
         return false
     }
-    
-    init {
-        // Add sample data for testing
-        addHistoryItem("Text QR", "Hello World!")
-        addHistoryItem("URL QR", "https://www.google.com")
-        addHistoryItem("Email QR", "test@example.com")
-        addHistoryItem("SMS QR", "0123456789:Hello from SMS")
-        addHistoryItem("Twitter Profile QR", "https://twitter.com/username")
-        addHistoryItem("WiFi QR", "WIFI:S:MyNetwork;T:WPA;P:mypassword;;")
-        addHistoryItem("Scanned", "https://www.figma.com")
-    }
 } 
