@@ -253,7 +253,7 @@ fun QRScannerScreen(navController: NavController) {
     }
 }
 
-@androidx.camera.core.ExperimentalGetImage
+@ExperimentalGetImage
 private fun setupCamera(
     context: Context,
     previewView: PreviewView,
@@ -297,7 +297,7 @@ private fun setupCamera(
     }, ContextCompat.getMainExecutor(context))
 }
 
-@androidx.camera.core.ExperimentalGetImage
+@ExperimentalGetImage
 private fun processImageProxy(
     imageProxy: ImageProxy,
     onQRCodeDetected: (String) -> Unit

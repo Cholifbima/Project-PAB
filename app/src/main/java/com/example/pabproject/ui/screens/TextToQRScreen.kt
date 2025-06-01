@@ -1,13 +1,11 @@
 package com.example.pabproject.ui.screens
 
-import android.graphics.Bitmap
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,13 +20,11 @@ import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pabproject.LocalHistoryManager
 import com.example.pabproject.ui.components.*
-import com.example.pabproject.utils.GalleryUtils
 import com.example.pabproject.ui.theme.AbrilFatface
 import com.example.pabproject.ui.theme.PlayfairDisplay
 import com.example.pabproject.viewmodel.MainViewModel
 import com.example.pabproject.viewmodel.MainViewModelFactory
 import androidx.lifecycle.SavedStateHandle
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,7 +41,7 @@ fun TextToQRScreen(
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     val historyManager = LocalHistoryManager.current
-    val scope = rememberCoroutineScope()
+    rememberCoroutineScope()
     val currentRoute = navController.currentDestination?.route
     
     // Show error message if any

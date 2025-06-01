@@ -1,11 +1,9 @@
 package com.example.pabproject.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.example.pabproject.ui.theme.Nunito
 
 @OptIn(ExperimentalMaterial3Api::class)

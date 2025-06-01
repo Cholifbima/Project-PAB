@@ -29,7 +29,7 @@ import com.example.pabproject.ui.theme.PlayfairDisplay
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(navController: NavController) {
-    var qrText by remember { mutableStateOf("Sample QR Code Text") }
+    val qrText by remember { mutableStateOf("Sample QR Code Text") }
     val currentRoute = navController.currentDestination?.route
     val scrollState = rememberScrollState()
     

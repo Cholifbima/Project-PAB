@@ -21,9 +21,7 @@ import androidx.navigation.NavController
 import com.example.pabproject.LocalHistoryManager
 import com.example.pabproject.ui.components.*
 import com.example.pabproject.ui.theme.AbrilFatface
-import com.example.pabproject.ui.theme.Nunito
 import com.example.pabproject.ui.theme.PlayfairDisplay
-import com.example.pabproject.utils.QRCodeGenerator
 import com.example.pabproject.viewmodel.MainViewModel
 import com.example.pabproject.viewmodel.MainViewModelFactory
 import androidx.lifecycle.SavedStateHandle

@@ -2,14 +2,10 @@ package com.example.pabproject.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -25,7 +21,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -164,7 +159,7 @@ fun HistoryScreen(navController: NavController) {
                         
                         IconButton(onClick = {
                             scope.launch {
-                                val snackbarResult = historyManager.clearHistory()
+                                historyManager.clearHistory()
                                 // You could add snackbar functionality here
                             }
                         }) {
@@ -187,7 +182,7 @@ fun HistoryScreen(navController: NavController) {
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
                     ) {
-                        QRCodeType.values().take(4).forEachIndexed { index, type ->
+                        QRCodeType.entries.toTypedArray().take(4).forEachIndexed { index, type ->
                             SegmentedButton(
                                 selected = selectedFilter == type,
                                 onClick = { selectedFilter = type },

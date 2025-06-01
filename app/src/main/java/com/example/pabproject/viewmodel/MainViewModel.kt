@@ -167,21 +167,4 @@ class MainViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
         return true
     }
 
-    fun clearQrCode() {
-        // Reset all states
-        savedStateHandle["textContent"] = ""
-        savedStateHandle["urlContent"] = ""
-        savedStateHandle["emailAddress"] = ""
-        savedStateHandle["emailSubject"] = ""
-        savedStateHandle["emailBody"] = ""
-        savedStateHandle["phoneNumber"] = ""
-        savedStateHandle["smsMessage"] = ""
-        savedStateHandle["wifiSSID"] = ""
-        savedStateHandle["wifiPassword"] = ""
-        savedStateHandle["wifiEncryption"] = "WPA"
-        savedStateHandle["twitterUsername"] = ""
-        savedStateHandle["tweetText"] = ""
-        savedStateHandle["isQrGenerated"] = false
-        savedStateHandle["errorMessage"] = null
-    }
-} 
+}

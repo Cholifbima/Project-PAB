@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -25,7 +24,6 @@ import com.example.pabproject.ui.components.*
 import com.example.pabproject.ui.theme.AbrilFatface
 import com.example.pabproject.ui.theme.Nunito
 import com.example.pabproject.ui.theme.PlayfairDisplay
-import com.example.pabproject.utils.QRCodeGenerator
 import com.example.pabproject.viewmodel.MainViewModel
 import com.example.pabproject.viewmodel.MainViewModelFactory
 import androidx.lifecycle.SavedStateHandle
