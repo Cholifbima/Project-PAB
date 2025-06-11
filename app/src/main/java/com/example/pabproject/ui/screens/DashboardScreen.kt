@@ -71,15 +71,15 @@ fun DashboardScreen(navController: NavController) {
                 .padding(16.dp)
                 .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             
             Text(
                 text = "Welcome to QR Generator",
                 fontFamily = AbrilFatface,
                 fontWeight = FontWeight.Normal,
-                fontSize = 26.sp,
+                fontSize = 24.sp,
                 letterSpacing = 0.5.sp,
                 color = MaterialTheme.colorScheme.primary,
                 textAlign = TextAlign.Center
@@ -88,15 +88,15 @@ fun DashboardScreen(navController: NavController) {
             // QR Code Display with decoration
             Box(
                 modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .clip(RoundedCornerShape(20.dp))
+                    .padding(vertical = 4.dp)
+                    .clip(RoundedCornerShape(16.dp))
                     .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                    .padding(20.dp),
+                    .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
                 QRCodeDisplay(
                     text = qrText,
-                    modifier = Modifier.size(220.dp)
+                    modifier = Modifier.size(180.dp)
                 )
             }
             
@@ -109,40 +109,40 @@ fun DashboardScreen(navController: NavController) {
                 )
             ) {
                 Column(
-                    modifier = Modifier.padding(20.dp),
+                    modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = "How do I create a QR Code?",
                         fontFamily = PlayfairDisplay,
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 18.sp,
+                        fontSize = 17.sp,
                         letterSpacing = 0.15.sp,
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                     
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     
                     Text(
                         text = "We'll show you how in just three simple steps:",
                         fontFamily = Nunito,
                         fontWeight = FontWeight.Medium,
-                        fontSize = 16.sp,
+                        fontSize = 15.sp,
                         letterSpacing = 0.25.sp,
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                     
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     
                     Text(
                         text = "1. Choose a QR type\n2. Enter your content\n3. Generate & save",
                         fontFamily = Nunito,
                         fontWeight = FontWeight.Normal,
-                        fontSize = 15.sp,
+                        fontSize = 14.sp,
                         letterSpacing = 0.25.sp,
-                        textAlign = TextAlign.Start,
+                        textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
@@ -157,8 +157,6 @@ fun DashboardScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth(),
                 isPrimary = true
             )
-            
-            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 } 

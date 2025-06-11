@@ -198,6 +198,8 @@ fun QRDetailScreen(
             // QR Code Display
             QRCodeDisplay(
                 text = historyItem.content,
+                qrColor = androidx.compose.ui.graphics.Color(historyItem.qrColor),
+                backgroundColor = androidx.compose.ui.graphics.Color(historyItem.backgroundColor),
                 modifier = Modifier.size(220.dp),
                 onQRCodeGenerated = { bitmap ->
                     generatedBitmap = bitmap

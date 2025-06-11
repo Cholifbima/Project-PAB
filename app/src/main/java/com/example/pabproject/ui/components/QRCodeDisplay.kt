@@ -25,13 +25,19 @@ import com.example.pabproject.utils.QRCodeGenerator
 fun QRCodeDisplay(
     text: String,
     modifier: Modifier = Modifier,
+    qrColor: androidx.compose.ui.graphics.Color = com.example.pabproject.ui.theme.Brown,
+    backgroundColor: androidx.compose.ui.graphics.Color = com.example.pabproject.ui.theme.PaleYellow,
     onQRCodeGenerated: (Bitmap?) -> Unit = {}
 ) {
     var qrBitmap by remember { mutableStateOf<Bitmap?>(null) }
     
-    LaunchedEffect(text) {
+    LaunchedEffect(text, qrColor, backgroundColor) {
         if (text.isNotBlank()) {
-            val bitmap = QRCodeGenerator.generateQRCode(text)
+            val bitmap = QRCodeGenerator.generateQRCode(
+                text = text,
+                darkColor = qrColor,
+                lightColor = backgroundColor
+            )
             qrBitmap = bitmap
             onQRCodeGenerated(bitmap)
         }

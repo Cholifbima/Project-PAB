@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import com.example.pabproject.ui.theme.Brown
@@ -26,14 +27,22 @@ data class HistoryItem(
     val content: String,
     val timestamp: String = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date()),
     val icon: ImageVector = Icons.Default.QrCode,
-    val iconTint: Color = Brown
+    val iconTint: Color = Brown,
+    // Custom QR colors
+    val qrColor: Int = Color.Black.toArgb(),
+    val backgroundColor: Int = Color.White.toArgb()
 )
 
 class HistoryManager : ViewModel() {
     private val _historyItems = mutableStateListOf<HistoryItem>()
     val historyItems: List<HistoryItem> = _historyItems
     
-    fun addHistoryItem(type: String, content: String) {
+    fun addHistoryItem(
+        type: String, 
+        content: String, 
+        qrColor: Color = Color.Black, 
+        backgroundColor: Color = Color.White
+    ) {
         val (icon, color) = when {
             type.contains("Email", ignoreCase = true) -> Icons.Default.Email to Gold
             type.contains("URL", ignoreCase = true) -> Icons.Default.Link to LightBrown
@@ -49,7 +58,9 @@ class HistoryManager : ViewModel() {
             type = type,
             content = content,
             icon = icon,
-            iconTint = color
+            iconTint = color,
+            qrColor = qrColor.toArgb(),
+            backgroundColor = backgroundColor.toArgb()
         )
         _historyItems.add(0, newItem) // Add to beginning of list
         

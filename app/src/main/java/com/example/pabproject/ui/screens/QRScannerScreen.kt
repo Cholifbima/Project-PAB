@@ -1,7 +1,16 @@
 package com.example.pabproject.ui.screens
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
+import androidx.compose.foundation.clickable
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.OpenInBrowser
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
+import android.widget.Toast
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -20,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.LifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
@@ -47,9 +57,11 @@ import java.util.concurrent.Executors
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun QRScannerScreen(navController: NavController) {
+    val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val historyManager = LocalHistoryManager.current
     val currentRoute = navController.currentDestination?.route
+    val clipboardManager = LocalClipboardManager.current
     
     var scannedResult by remember { mutableStateOf("") }
     var isFlashOn by remember { mutableStateOf(false) }
@@ -175,6 +187,8 @@ fun QRScannerScreen(navController: NavController) {
                                 color = MaterialTheme.colorScheme.onSecondaryContainer
                             )
                             Spacer(modifier = Modifier.height(12.dp))
+                            
+                            // Clickable text result
                             Text(
                                 text = scannedResult,
                                 fontFamily = FiraCode,
@@ -182,8 +196,54 @@ fun QRScannerScreen(navController: NavController) {
                                 fontSize = 14.sp,
                                 letterSpacing = 0.sp,
                                 lineHeight = 20.sp,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
+                                color = if (isUrl(scannedResult)) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        if (isUrl(scannedResult)) {
+                                            openUrl(context, scannedResult)
+                                        }
+                                    }
                             )
+                            
+                            Spacer(modifier = Modifier.height(16.dp))
+                            
+                            // Action buttons
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                // Copy button
+                                QRActionButton(
+                                    text = "Copy",
+                                    icon = Icons.Default.ContentCopy,
+                                    onClick = {
+                                        clipboardManager.setText(AnnotatedString(scannedResult))
+                                        Toast.makeText(context, "Copied to clipboard!", Toast.LENGTH_SHORT).show()
+                                    },
+                                    modifier = Modifier.weight(1f),
+                                    isPrimary = false
+                                )
+                                
+                                // Open/Share button
+                                if (isUrl(scannedResult)) {
+                                    QRActionButton(
+                                        text = "Open",
+                                        icon = Icons.Default.OpenInBrowser,
+                                        onClick = { openUrl(context, scannedResult) },
+                                        modifier = Modifier.weight(1f),
+                                        isPrimary = true
+                                    )
+                                } else {
+                                    QRActionButton(
+                                        text = "Share",
+                                        icon = Icons.Default.Share,
+                                        onClick = { shareText(context, scannedResult) },
+                                        modifier = Modifier.weight(1f),
+                                        isPrimary = true
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -342,5 +402,36 @@ private fun processImageProxy(
             }
     } else {
         imageProxy.close()
+    }
+}
+
+// Helper functions
+private fun isUrl(text: String): Boolean {
+    return text.startsWith("http://") || text.startsWith("https://") || text.startsWith("www.")
+}
+
+private fun openUrl(context: Context, url: String) {
+    try {
+        val formattedUrl = if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            "https://$url"
+        } else {
+            url
+        }
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(formattedUrl))
+        context.startActivity(intent)
+    } catch (e: Exception) {
+        Toast.makeText(context, "Cannot open URL: ${e.message}", Toast.LENGTH_SHORT).show()
+    }
+}
+
+private fun shareText(context: Context, text: String) {
+    try {
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, text)
+        }
+        context.startActivity(Intent.createChooser(shareIntent, "Share QR Result"))
+    } catch (e: Exception) {
+        Toast.makeText(context, "Cannot share text: ${e.message}", Toast.LENGTH_SHORT).show()
     }
 } 

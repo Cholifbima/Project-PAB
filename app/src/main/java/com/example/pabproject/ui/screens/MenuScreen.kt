@@ -150,16 +150,6 @@ fun MenuScreen(navController: NavController) {
                 isPrimary = false
             )
             
-            QRActionButton(
-                text = "Scan QR Code",
-                icon = Icons.Default.QrCodeScanner,
-                onClick = {
-                    navController.navigate(Screen.QRScanner.route)
-                },
-                modifier = Modifier.fillMaxWidth(),
-                isPrimary = true
-            )
-            
             Card(
                 modifier = Modifier
                     .fillMaxWidth()

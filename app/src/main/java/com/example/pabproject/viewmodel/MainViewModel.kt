@@ -3,8 +3,14 @@ package com.example.pabproject.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.StateFlow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import com.example.pabproject.utils.CustomColorManager
 
 class MainViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
+    // Color management instance
+    val customColorManager = CustomColorManager()
+
     // Text QR
     private val _textContent = savedStateHandle.getStateFlow("textContent", "")
     val textContent: StateFlow<String> = _textContent
@@ -53,6 +59,13 @@ class MainViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
 
     private val _errorMessage = savedStateHandle.getStateFlow<String?>("errorMessage", null)
     val errorMessage: StateFlow<String?> = _errorMessage
+
+    // QR Color customization - Default black
+    private val _qrColor = savedStateHandle.getStateFlow("qrColor", Color.Black.toArgb())
+    val qrColor: StateFlow<Int> = _qrColor
+
+    private val _backgroundColor = savedStateHandle.getStateFlow("backgroundColor", Color.White.toArgb())
+    val backgroundColor: StateFlow<Int> = _backgroundColor
 
     // Text QR functions
     fun setTextContent(content: String) {
@@ -117,6 +130,17 @@ class MainViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
 
     fun setTweetText(tweet: String) {
         savedStateHandle["tweetText"] = tweet
+        savedStateHandle["isQrGenerated"] = false
+    }
+
+    // QR Color functions
+    fun setQrColor(color: Color) {
+        savedStateHandle["qrColor"] = color.toArgb()
+        savedStateHandle["isQrGenerated"] = false
+    }
+
+    fun setBackgroundColor(color: Color) {
+        savedStateHandle["backgroundColor"] = color.toArgb()
         savedStateHandle["isQrGenerated"] = false
     }
 
