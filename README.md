@@ -2,10 +2,13 @@
 
 ## Submission Requirements:
 1. Link YouTube: [Demo Aplikasi](https://youtu.be/v7HCxruDEN0?si=3G8Q5xWD9wz4UmuX)
-2. Dokumen PDF/DOC terkait detail project (format bebas)
+2. Dokumen PDF/DOC terkait detail project (pada file FP_AndroB_L0123040_L0123053_L0123063.pdf)
 3. Source code (repository ini)
 
----
+## 👥 Contributors (Kelompok 2)
+CHOLIF BIMA ARDIANSYAH: L0123040
+FATHAN DHIYA MAHFUZH: L0123053
+HAVIZHAN RHAIYA ARDHANA: L0123063
 
 # QR Code Generator & Scanner Android App
 
@@ -218,11 +221,5 @@ val emailQR = QRCodeGenerator.generateEmailQRCode(
 ## 📄 License
 
 This project is created for educational purposes (PAB Project).
-
-## 👥 Contributors
-
-Cholif Bima Ardiansyah
-Fathan Dhiya Mahfuzh
-Havizhan Rhaiya Ardhana
 
 
