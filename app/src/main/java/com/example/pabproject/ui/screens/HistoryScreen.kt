@@ -53,12 +53,13 @@ enum class QRCodeType(val displayName: String, val icon: ImageVector, val color:
 fun HistoryScreen(navController: NavController) {
     val historyManager = LocalHistoryManager.current
     val currentRoute = navController.currentDestination?.route
-    val historyItems = historyManager.historyItems
     val scope = rememberCoroutineScope()
-    
-    var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
-    var selectedFilter by remember { mutableStateOf(QRCodeType.ALL) }
     var isSearchActive by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
+    var selectedFilter by remember { mutableStateOf<QRCodeType>(QRCodeType.ALL) }
+    
+    // Collect history items from StateFlow
+    val historyItems by historyManager.historyItems.collectAsState()
     
     // Group and filter items
     val filteredAndGroupedItems = remember(historyItems, searchQuery.text, selectedFilter) {
@@ -96,7 +97,7 @@ fun HistoryScreen(navController: NavController) {
             Pair(date, items)
         }
     }
-    
+
     Scaffold(
         topBar = {
             Column {
@@ -160,7 +161,6 @@ fun HistoryScreen(navController: NavController) {
                         IconButton(onClick = {
                             scope.launch {
                                 historyManager.clearHistory()
-                                // You could add snackbar functionality here
                             }
                         }) {
                             Icon(
@@ -207,7 +207,7 @@ fun HistoryScreen(navController: NavController) {
             }
         },
         bottomBar = {
-            BottomNavigationBar(navController, currentRoute)
+            BottomNavigationBar(navController = navController, currentRoute = currentRoute)
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
@@ -221,33 +221,22 @@ fun HistoryScreen(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(100.dp)
-                        .clip(RoundedCornerShape(50.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = if (searchQuery.text.isNotBlank() || selectedFilter != QRCodeType.ALL) 
-                            Icons.Default.SearchOff else Icons.Default.History,
-                        contentDescription = "No History",
-                        modifier = Modifier.size(60.dp),
-                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
-                    )
-                }
+                Icon(
+                    imageVector = if (searchQuery.text.isNotBlank() || selectedFilter != QRCodeType.ALL) 
+                        Icons.Default.SearchOff else Icons.Default.History,
+                    contentDescription = "No History",
+                    modifier = Modifier.size(64.dp),
+                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                )
                 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 
                 Text(
                     text = if (searchQuery.text.isNotBlank() || selectedFilter != QRCodeType.ALL) 
                         "No matching results" else "No QR Code History",
                     fontFamily = AbrilFatface,
-                    fontWeight = FontWeight.Normal,
                     fontSize = 24.sp,
-                    letterSpacing = 0.25.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center
+                    color = MaterialTheme.colorScheme.primary
                 )
                 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -256,12 +245,8 @@ fun HistoryScreen(navController: NavController) {
                     text = if (searchQuery.text.isNotBlank() || selectedFilter != QRCodeType.ALL) 
                         "Try a different search term or filter" else 
                         "Generated and scanned QR codes will appear here",
-                    fontFamily = Nunito,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 16.sp,
-                    letterSpacing = 0.25.sp,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         } else {
@@ -293,53 +278,14 @@ fun HistoryScreen(navController: NavController) {
                     
                     // Items for this date
                     itemsIndexed(items) { index, item ->
-                        val dismissState = rememberSwipeToDismissBoxState()
-                        val currentItem by rememberUpdatedState(item)
-                        
-                        if (dismissState.currentValue != SwipeToDismissBoxValue.Settled) {
-                            LaunchedEffect(Unit) {
-                                // Remove item when swiped
-                                historyManager.removeHistoryItem(currentItem.id)
-                                dismissState.reset()
+                        HistoryItemCard(
+                            item = item,
+                            onItemClick = {
+                                navController.navigate("qr_detail/${item.id}")
+                            },
+                            onDeleteClick = {
+                                historyManager.removeHistoryItem(item.id)
                             }
-                        }
-                        
-                        SwipeToDismissBox(
-                            state = dismissState,
-                            backgroundContent = {
-                                val color = MaterialTheme.colorScheme.error
-                                val scale by animateFloatAsState(
-                                    if (dismissState.targetValue == SwipeToDismissBoxValue.EndToStart) 1f else 0.75f
-                                )
-                                
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(horizontal = 20.dp, vertical = 6.dp)
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .background(color),
-                                    contentAlignment = Alignment.CenterEnd
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Delete,
-                                        contentDescription = "Delete",
-                                        modifier = Modifier
-                                            .scale(scale)
-                                            .padding(end = 16.dp),
-                                        tint = Color.White
-                                    )
-                                }
-                            },
-                            content = {
-                                HistoryItemCard(
-                                    item = item,
-                                    onClick = {
-                                        navController.navigate("qr_detail/${item.id}")
-                                    }
-                                )
-                            },
-                            enableDismissFromStartToEnd = false,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
                         )
                         
                         // Add divider except after the last item
@@ -358,68 +304,28 @@ fun HistoryScreen(navController: NavController) {
 
 @Composable
 fun DateHeader(date: String) {
-    val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-    val yesterday = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(
-        Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -1) }.time
+    Text(
+        text = date,
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     )
-    
-    val displayDate = when(date) {
-        today -> "Today"
-        yesterday -> "Yesterday"
-        else -> {
-            // Format the date in a more readable format
-            try {
-                val parsedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(date)
-                SimpleDateFormat("MMMM d, yyyy", Locale.getDefault()).format(parsedDate)
-            } catch (e: Exception) {
-                date
-            }
-        }
-    }
-    
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Divider(
-            modifier = Modifier.weight(1f),
-            color = MaterialTheme.colorScheme.outlineVariant
-        )
-        
-        Text(
-            text = displayDate,
-            fontFamily = Nunito,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.padding(horizontal = 8.dp)
-        )
-        
-        Divider(
-            modifier = Modifier.weight(1f),
-            color = MaterialTheme.colorScheme.outlineVariant
-        )
-    }
 }
 
 @Composable
 fun HistoryItemCard(
     item: HistoryItem,
-    onClick: () -> Unit
+    onItemClick: () -> Unit,
+    onDeleteClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .shadow(2.dp, RoundedCornerShape(16.dp))
-            .clickable { onClick() },
+            .clickable { onItemClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 1.dp
         )
     ) {
         Row(
@@ -428,20 +334,12 @@ fun HistoryItemCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = item.icon,
-                    contentDescription = item.type,
-                    modifier = Modifier.size(24.dp),
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
+            Icon(
+                imageVector = item.icon,
+                contentDescription = null,
+                tint = item.iconTint,
+                modifier = Modifier.size(32.dp)
+            )
             
             Spacer(modifier = Modifier.width(16.dp))
             
@@ -450,42 +348,47 @@ fun HistoryItemCard(
             ) {
                 Text(
                     text = item.type,
-                    fontFamily = PlayfairDisplay,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 16.sp,
-                    letterSpacing = 0.15.sp,
+                    style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
+                
+                Spacer(modifier = Modifier.height(4.dp))
+                
                 Text(
                     text = item.content,
-                    fontFamily = Nunito,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 14.sp,
-                    letterSpacing = 0.25.sp,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+                
+                Spacer(modifier = Modifier.height(4.dp))
+                
                 Text(
-                    text = SimpleDateFormat("HH:mm", Locale.getDefault())
-                        .format(SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-                        .parse(item.timestamp) ?: Date()),
-                    fontFamily = Inter,
-                    fontWeight = FontWeight.Light,
-                    fontSize = 12.sp,
-                    letterSpacing = 0.4.sp,
+                    text = item.timestamp,
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                 )
             }
             
             Spacer(modifier = Modifier.width(8.dp))
             
-            IconButton(onClick = onClick) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.OpenInNew,
-                    contentDescription = "Open",
-                    tint = MaterialTheme.colorScheme.primary
-                )
+            Row {
+                IconButton(onClick = onItemClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                        contentDescription = "Open",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+                
+                IconButton(onClick = onDeleteClick) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
             }
         }
     }

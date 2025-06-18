@@ -45,17 +45,17 @@ class HistoryManager(private val context: Context) : ViewModel() {
     private val database = AppDatabase.getDatabase(context)
     private val historyDao = database.historyDao()
     
-    private val _historyItems = mutableStateListOf<HistoryItem>()
-    val historyItems: List<HistoryItem> = _historyItems
+    private val _historyItems = MutableStateFlow<List<HistoryItem>>(emptyList())
+    val historyItems: StateFlow<List<HistoryItem>> = _historyItems.asStateFlow()
     
     init {
         viewModelScope.launch {
             historyDao.getAllHistory().collect { entities ->
-                _historyItems.clear()
-                entities.forEach { entity ->
+                val items = entities.map { entity ->
                     val (icon, color) = getIconAndColor(entity.type)
-                    _historyItems.add(entity.toHistoryItem(icon, color))
+                    entity.toHistoryItem(icon, color)
                 }
+                _historyItems.value = items
             }
         }
     }
@@ -102,11 +102,11 @@ class HistoryManager(private val context: Context) : ViewModel() {
     }
     
     fun getHistoryItem(id: String): HistoryItem? {
-        return _historyItems.find { it.id == id }
+        return _historyItems.value.find { it.id == id }
     }
     
     fun clearHistory(): Boolean {
-        if (_historyItems.isNotEmpty()) {
+        if (_historyItems.value.isNotEmpty()) {
             viewModelScope.launch {
                 historyDao.clearHistory()
             }
