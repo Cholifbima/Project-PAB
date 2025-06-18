@@ -1,5 +1,6 @@
 package com.example.pabproject.utils
 
+import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Link
@@ -14,10 +15,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.pabproject.data.AppDatabase
+import com.example.pabproject.data.HistoryEntity
 import com.example.pabproject.ui.theme.Brown
 import com.example.pabproject.ui.theme.Gold
 import com.example.pabproject.ui.theme.LightBrown
 import com.example.pabproject.ui.theme.SandyBeige
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,17 +41,27 @@ data class HistoryItem(
     val backgroundColor: Int = Color.White.toArgb()
 )
 
-class HistoryManager : ViewModel() {
+class HistoryManager(private val context: Context) : ViewModel() {
+    private val database = AppDatabase.getDatabase(context)
+    private val historyDao = database.historyDao()
+    
     private val _historyItems = mutableStateListOf<HistoryItem>()
     val historyItems: List<HistoryItem> = _historyItems
     
-    fun addHistoryItem(
-        type: String, 
-        content: String, 
-        qrColor: Color = Color.Black, 
-        backgroundColor: Color = Color.White
-    ) {
-        val (icon, color) = when {
+    init {
+        viewModelScope.launch {
+            historyDao.getAllHistory().collect { entities ->
+                _historyItems.clear()
+                entities.forEach { entity ->
+                    val (icon, color) = getIconAndColor(entity.type)
+                    _historyItems.add(entity.toHistoryItem(icon, color))
+                }
+            }
+        }
+    }
+    
+    private fun getIconAndColor(type: String): Pair<ImageVector, Color> {
+        return when {
             type.contains("Email", ignoreCase = true) -> Icons.Default.Email to Gold
             type.contains("URL", ignoreCase = true) -> Icons.Default.Link to LightBrown
             type.contains("Text", ignoreCase = true) -> Icons.Default.TextFields to SandyBeige
@@ -53,27 +71,33 @@ class HistoryManager : ViewModel() {
             type.contains("WiFi", ignoreCase = true) -> Icons.Default.Wifi to Gold
             else -> Icons.Default.QrCode to Brown
         }
-        
-        val newItem = HistoryItem(
-            type = type,
-            content = content,
-            icon = icon,
-            iconTint = color,
-            qrColor = qrColor.toArgb(),
-            backgroundColor = backgroundColor.toArgb()
-        )
-        _historyItems.add(0, newItem) // Add to beginning of list
-        
-        // Keep only last 50 items
-        if (_historyItems.size > 50) {
-            _historyItems.removeAt(_historyItems.size - 1)
+    }
+    
+    fun addHistoryItem(
+        type: String, 
+        content: String, 
+        qrColor: Color = Color.Black, 
+        backgroundColor: Color = Color.White
+    ) {
+        viewModelScope.launch {
+            val (icon, color) = getIconAndColor(type)
+            val newItem = HistoryItem(
+                type = type,
+                content = content,
+                icon = icon,
+                iconTint = color,
+                qrColor = qrColor.toArgb(),
+                backgroundColor = backgroundColor.toArgb()
+            )
+            historyDao.insertHistory(HistoryEntity.fromHistoryItem(newItem))
         }
     }
     
     fun removeHistoryItem(id: String) {
-        val indexToRemove = _historyItems.indexOfFirst { it.id == id }
-        if (indexToRemove >= 0) {
-            _historyItems.removeAt(indexToRemove)
+        viewModelScope.launch {
+            historyDao.getHistoryById(id)?.let { entity ->
+                historyDao.deleteHistory(entity)
+            }
         }
     }
     
@@ -83,7 +107,9 @@ class HistoryManager : ViewModel() {
     
     fun clearHistory(): Boolean {
         if (_historyItems.isNotEmpty()) {
-            _historyItems.clear()
+            viewModelScope.launch {
+                historyDao.clearHistory()
+            }
             return true
         }
         return false
