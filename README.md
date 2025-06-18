@@ -1,3 +1,12 @@
+# Format Pengumpulan Laporan
+
+## Submission Requirements:
+1. Link YouTube: [Demo Aplikasi](https://youtu.be/v7HCxruDEN0?si=3G8Q5xWD9wz4UmuX)
+2. Dokumen PDF/DOC terkait detail project (format bebas)
+3. Source code (repository ini)
+
+---
+
 # QR Code Generator & Scanner Android App
 
 Aplikasi Android untuk generate dan scan QR code yang dibuat menggunakan Jetpack Compose untuk project PAB (Pemrograman Aplikasi Bergerak).
