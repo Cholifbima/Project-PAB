@@ -136,12 +136,10 @@ class MainViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
     // QR Color functions
     fun setQrColor(color: Color) {
         savedStateHandle["qrColor"] = color.toArgb()
-        savedStateHandle["isQrGenerated"] = false
     }
 
     fun setBackgroundColor(color: Color) {
         savedStateHandle["backgroundColor"] = color.toArgb()
-        savedStateHandle["isQrGenerated"] = false
     }
 
     // Generate QR code based on type
