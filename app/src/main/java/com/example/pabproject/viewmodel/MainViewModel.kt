@@ -57,6 +57,9 @@ class MainViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
     private val _isQrGenerated = savedStateHandle.getStateFlow("isQrGenerated", false)
     val isQrGenerated: StateFlow<Boolean> = _isQrGenerated
 
+    private val _isSavedToHistory = savedStateHandle.getStateFlow("isSavedToHistory", false)
+    val isSavedToHistory: StateFlow<Boolean> = _isSavedToHistory
+
     private val _errorMessage = savedStateHandle.getStateFlow<String?>("errorMessage", null)
     val errorMessage: StateFlow<String?> = _errorMessage
 
@@ -66,6 +69,11 @@ class MainViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
 
     private val _backgroundColor = savedStateHandle.getStateFlow("backgroundColor", Color.White.toArgb())
     val backgroundColor: StateFlow<Int> = _backgroundColor
+
+    // Function to set isSavedToHistory state
+    fun setIsSavedToHistory(saved: Boolean) {
+        savedStateHandle["isSavedToHistory"] = saved
+    }
 
     // Text QR functions
     fun setTextContent(content: String) {
@@ -145,6 +153,7 @@ class MainViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
     // Generate QR code based on type
     fun generateQrCode(type: String): Boolean {
         savedStateHandle["errorMessage"] = null
+        savedStateHandle["isSavedToHistory"] = false
         
         when (type) {
             "TEXT" -> {
